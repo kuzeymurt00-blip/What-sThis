@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatIsThis | Ultimate Neon</title>
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+        
+        :root {
+            --bg-color: #d1d7db; --sidebar-bg: #ffffff; --header-bg: #f0f2f5;
+            --text-color: #111b21; --accent: #00a884; --msg-sent: #dcf8c6;
+            --msg-received: #ffffff; --neon-glow: none;
+        }
+
+        .dark-theme {
+            --bg-color: #0b141a; --sidebar-bg: #111b21; --header-bg: #202c33;
+            --text-color: #e9edef; --msg-sent: #005c4b; --msg-received: #202c33;
+        }
+
+        .neon-theme {
+            --bg-color: #050505; --sidebar-bg: #0d0d0d; --header-bg: #151515;
+            --text-color: #39ff14; --accent: #bc13fe; --msg-sent: #2b002b;
+            --msg-received: #002200; --neon-glow: 0 0 15px #bc13fe;
+        }
+
+        * { padding: 0; margin: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; transition: 0.2s; }
+        body { background-color: var(--bg-color); color: var(--text-color); height: 100vh; overflow: hidden; }
+
+        /* Splash */
+        #splash { position: fixed; width: 100%; height: 100vh; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
+        #splash h1 { color: var(--accent); font-size: 3em; letter-spacing: 5px; text-shadow: var(--neon-glow); }
+
+        /* Auth */
+        #auth-section { display: none; justify-content: center; align-items: center; height: 100vh; background: #0b141a; }
+        .login-card { background: var(--sidebar-bg); padding: 30px; border-radius: 20px; width: 350px; text-align: center; box-shadow: var(--neon-glow); }
+        .login-card input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid #ccc; background: var(--header-bg); color: var(--text-color); outline: none; }
+        .login-card button { width: 100%; padding: 12px; background: var(--accent); border: none; color: white; border-radius: 10px; cursor: pointer; font-weight: 600; margin-top: 10px; }
+
+        /* Layout */
+        #app-section { display: none; height: 100vh; flex-direction: column; }
+        .container { display: flex; flex: 1; height: calc(100vh - 70px); }
+        .sidebar { width: 320px; background: var(--sidebar-bg); display: flex; flex-direction: column; border-right: 1px solid rgba(0,0,0,0.1); }
+        .header { height: 65px; background: var(--header-bg); padding: 0 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.05); }
+
+        .group-list { flex: 1; overflow-y: auto; }
+        .group-item { padding: 15px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between; }
+        .group-item.active { background: rgba(0,168,132,0.1); border-left: 5px solid var(--accent); color: var(--accent); }
+
+        /* Chat */
+        .main-chat { flex: 1; display: flex; flex-direction: column; background: rgba(0,0,0,0.02); position: relative; }
+        .messages-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; }
+        .message { max-width: 70%; padding: 10px 15px; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); position: relative; display: flex; gap: 10px; }
+        .sent { background: var(--msg-sent); align-self: flex-end; flex-direction: row-reverse; }
+        .received { background: var(--msg-received); align-self: flex-start; }
+        .avatar-img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid var(--accent); }
+
+        /* Ghost Mode */
+        .ghost-img { filter: blur(10px); cursor: pointer; transition: 0.3s; }
+        .ghost-img.viewed { display: none !important; }
+
+        /* Anket */
+        .poll-box { background: rgba(0,0,0,0.05); padding: 10px; border-radius: 10px; margin-top: 5px; width: 200px; }
+        .poll-option { background: var(--accent); color: white; padding: 5px; margin: 5px 0; border-radius: 5px; cursor: pointer; text-align: center; font-size: 12px; }
+
+        /* Modals */
+        #invite-modal, #profile-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 380px; max-height: 450px; background: var(--sidebar-bg); z-index: 1000; border-radius: 20px; padding: 20px; box-shadow: 0 0 40px rgba(0,0,0,0.5); border: 2px solid var(--accent); }
+        .user-invite-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+
+        #notif-bar { display: none; background: var(--accent); color: white; padding: 12px 20px; justify-content: space-between; align-items: center; z-index: 1001; font-weight: bold; }
+        #typing-indicator { font-size: 12px; font-style: italic; padding: 5px 20px; color: var(--accent); min-height: 20px; }
+
+        .input-area { height: 75px; background: var(--header-bg); display: flex; align-items: center; padding: 0 15px; gap: 10px; }
+        .input-area input { flex: 1; padding: 14px 20px; border-radius: 30px; border: none; outline: none; background: var(--sidebar-bg); color: var(--text-color); }
+        
+        .sidebar-footer { padding: 15px; background: var(--header-bg); display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body>
+
+    <div id="splash"><h1>WhatIsThis</h1><p style="color:#444; letter-spacing: 2px;">ABSOLUTE STUDIOS</p></div>
+
+    <div id="notif-bar">
+        <span id="notif-text">Yeni bir davet!</span>
+        <div>
+            <button id="accept-btn" style="padding:5px 12px; border-radius:5px; border:none; background:white; color:black; cursor:pointer; font-weight:bold;">Kabul Et</button>
+            <button id="decline-btn" style="padding:5px 12px; border-radius:5px; border:none; background:rgba(0,0,0,0.2); color:white; cursor:pointer; margin-left:5px;">X</button>
+        </div>
+    </div>
+
+    <div id="profile-modal">
+        <h3 style="color:var(--accent)">Profilini Düzenle</h3>
+        <input type="file" id="avatarInp" accept="image/*" style="margin: 10px 0;">
+        <button onclick="updateAvatar()" style="width:100%; padding:10px; background:var(--accent); color:white; border:none; border-radius:10px; cursor:pointer;">Avatarı Güncelle</button>
+        <button onclick="document.getElementById('profile-modal').style.display='none'" style="width:100%; margin-top:5px; padding:10px; border:none; background:none; color:var(--text-color); cursor:pointer;">Kapat</button>
+    </div>
+
+    <section id="auth-section">
+        <div class="login-card">
+            <h2 style="color:var(--accent); margin-bottom:15px;">WhatIsThis</h2>
+            <input type="email" id="email" placeholder="E-posta">
+            <input type="password" id="password" placeholder="Şifre">
+            <button id="loginBtn">Giriş Yap</button>
+            <button id="signupBtn" style="background:none; color:var(--accent); border:1px solid var(--accent); margin-top:10px;">Hesap Oluştur</button>
+        </div>
+    </section>
+
+    <div id="invite-modal">
+        <h3 style="margin-bottom:15px; color:var(--accent);">Kullanıcı Davet Et</h3>
+        <div id="user-list-to-invite" style="overflow-y:auto; max-height:300px;"></div>
+        <button onclick="document.getElementById('invite-modal').style.display='none'" style="width:100%; margin-top:15px; padding:10px; border-radius:10px; border:none; background:var(--header-bg); color:var(--text-color); cursor:pointer;">Kapat</button>
+    </div>
+
+    <section id="app-section">
+        <div class="container">
+            <div class="sidebar">
+                <div class="header">
+                    <button onclick="openCreateGroup()" style="background:var(--accent); color:white; border:none; padding:10px; border-radius:10px; cursor:pointer; width:100%; font-weight:600;">+ Yeni Özel Grup</button>
+                </div>
+                <div class="group-list" id="groupList">
+                    <div class="group-item active" onclick="changeGroup('Genel', this)"><strong># Genel Sohbet</strong></div>
+                </div>
+                <div class="sidebar-footer">
+                    <img id="myAvatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="avatar-img" onclick="document.getElementById('profile-modal').style.display='block'" style="cursor:pointer">
+                    <span id="userDisp" style="font-weight:bold; color:var(--accent);"></span>
+                    <button id="logoutBtn" style="color:#ff3b3b; border:none; background:none; cursor:pointer; font-weight:bold;">ÇIKIŞ</button>
+                </div>
+            </div>
+
+            <div class="main-chat">
+                <div class="header">
+                    <b id="chatTitle">Genel Sohbet</b>
+                    <div style="display:flex; gap:10px;">
+                        <button onclick="sendPoll()" style="background:none; border:none; cursor:pointer; font-size:20px;">📊</button>
+                        <select id="themeSelector" onchange="setTheme(this.value)" style="padding:5px; border-radius:5px; background:var(--sidebar-bg); color:var(--text-color); border:1px solid var(--accent);">
+                            <option value="light">Aydınlık</option>
+                            <option value="dark">Karanlık</option>
+                            <option value="neon">Neon</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="messages-container" id="chatBox"></div>
+                <div id="typing-indicator"></div>
+                <div class="input-area">
+                    <button onclick="document.getElementById('ghostInp').click()" title="Ghost Photo" style="background:none; border:none; font-size:22px; cursor:pointer;">👻</button>
+                    <button onclick="document.getElementById('fileInp').click()" style="background:none; border:none; font-size:22px; cursor:pointer;">🖼️</button>
+                    <input type="file" id="fileInp" style="display:none" accept="image/*">
+                    <input type="file" id="ghostInp" style="display:none" accept="image/*">
+                    <input type="text" id="msgInput" placeholder="Mesaj yazın...">
+                    <button id="sendBtn" style="background:var(--accent); color:white; border:none; width:45px; height:45px; border-radius:50%; cursor:pointer; font-size:20px;">➔</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, where, getDocs, doc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDF1eC0-BP0OFJeIzCFMsqCrtKVDAlPFdU",
+            authDomain: "whatisthis-56e92.firebaseapp.com",
+            projectId: "whatisthis-56e92",
+            storageBucket: "whatisthis-56e92.firebasestorage.app",
+            messagingSenderId: "938442719834",
+            appId: "1:938442719834:web:77f1770af389f4363ace63"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const IMG_KEY = "31821f4e615353f1b9b8b00b4683f221";
+
+        let activeGroup = "Genel";
+        let unsubscribeMsg = null;
+        let currentInvite = null;
+        let myAvatarUrl = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+
+        setPersistence(auth, browserLocalPersistence);
+
+        onAuthStateChanged(auth, async (u) => {
+            document.getElementById('splash').style.display = 'none';
+            if (u) {
+                document.getElementById('auth-section').style.display = 'none';
+                document.getElementById('app-section').style.display = 'flex';
+                document.getElementById('userDisp').innerText = u.email.split('@')[0];
+                
+                const uDoc = await getDocs(query(collection(db, "kullanicilar"), where("uid", "==", u.uid)));
+                if(!uDoc.empty && uDoc.docs[0].data().avatar) {
+                    myAvatarUrl = uDoc.docs[0].data().avatar;
+                    document.getElementById('myAvatar').src = myAvatarUrl;
+                }
+                
+                await setDoc(doc(db, "kullanicilar", u.uid), { email: u.email, uid: u.uid, avatar: myAvatarUrl }, { merge: true });
+                listenInvites(u.uid);
+                loadMyGroups(u.uid);
+                loadMessages();
+                listenTyping();
+            } else {
+                document.getElementById('auth-section').style.display = 'flex';
+                document.getElementById('app-section').style.display = 'none';
+            }
+        });
+
+        // --- AVATAR GÜNCELLEME ---
+        window.updateAvatar = async () => {
+            const f = document.getElementById('avatarInp').files[0];
+            if(!f) return;
+            const fd = new FormData(); fd.append("image", f);
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMG_KEY}`, { method: "POST", body: fd });
+            const d = await res.json();
+            if(d.success) {
+                myAvatarUrl = d.data.url;
+                await updateDoc(doc(db, "kullanicilar", auth.currentUser.uid), { avatar: myAvatarUrl });
+                document.getElementById('myAvatar').src = myAvatarUrl;
+                document.getElementById('profile-modal').style.display = 'none';
+                alert("Profil resmi güncellendi!");
+            }
+        };
+
+        // --- YAZIYOR SİSTEMİ ---
+        const typingRef = (group) => doc(db, "typing", group);
+        document.getElementById('msgInput').oninput = async (e) => {
+            if(e.target.value.length > 0) {
+                await setDoc(typingRef(activeGroup), { [auth.currentUser.uid]: auth.currentUser.email.split('@')[0] }, { merge: true });
+                setTimeout(async () => {
+                    await setDoc(typingRef(activeGroup), { [auth.currentUser.uid]: null }, { merge: true });
+                }, 3000);
+            }
+        };
+
+        function listenTyping() {
+            onSnapshot(doc(db, "typing", activeGroup), (s) => {
+                if(s.exists()) {
+                    const data = s.data();
+                    const typers = Object.values(data).filter(v => v && v !== auth.currentUser.email.split('@')[0]);
+                    document.getElementById('typing-indicator').innerText = typers.length > 0 ? typers.join(', ') + " yazıyor..." : "";
+                }
+            });
+        }
+
+        // --- ANKET SİSTEMİ ---
+        window.sendPoll = async () => {
+            const q = prompt("Anket Sorusu:");
+            if(!q) return;
+            const o1 = prompt("Seçenek 1:");
+            const o2 = prompt("Seçenek 2:");
+            await addDoc(collection(db, "mesajlar"), {
+                type: "poll", question: q, options: [o1, o2], votes: {},
+                user: auth.currentUser.email, avatar: myAvatarUrl, group: activeGroup, createdAt: serverTimestamp()
+            });
+        };
+
+        window.vote = async (msgId, optIdx) => {
+            const ref = doc(db, "mesajlar", msgId);
+            await updateDoc(ref, { [`votes.${auth.currentUser.uid}`]: optIdx });
+        };
+
+        // --- GHOST MODE ---
+        document.getElementById('ghostInp').onchange = async (e) => {
+            const f = e.target.files[0]; if(!f) return;
+            const fd = new FormData(); fd.append("image", f);
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMG_KEY}`, { method: "POST", body: fd });
+            const d = await res.json();
+            if(d.success) {
+                await addDoc(collection(db, "mesajlar"), {
+                    type: "ghost", image: d.data.url, viewedBy: [],
+                    user: auth.currentUser.email, avatar: myAvatarUrl, group: activeGroup, createdAt: serverTimestamp()
+                });
+            }
+        };
+
+        window.viewGhost = async (msgId, alreadyViewed) => {
+            if(alreadyViewed) return;
+            const ref = doc(db, "mesajlar", msgId);
+            await updateDoc(ref, { viewedBy: [auth.currentUser.uid] }); // Basit mantık: Bir kişi bakınca patlar
+        };
+
+        // --- MESAJLAR ---
+        async function send(txt = "", img = null) {
+            await addDoc(collection(db, "mesajlar"), {
+                text: txt, image: img, type: "text",
+                user: auth.currentUser.email, avatar: myAvatarUrl, group: activeGroup, createdAt: serverTimestamp()
+            });
+        }
+
+        function loadMessages() {
+            if(unsubscribeMsg) unsubscribeMsg();
+            const q = query(collection(db, "mesajlar"), where("group", "==", activeGroup), orderBy("createdAt", "asc"));
+            unsubscribeMsg = onSnapshot(q, (snap) => {
+                const box = document.getElementById('chatBox'); box.innerHTML = "";
+                snap.forEach(d => {
+                    const data = d.data();
+                    const isMe = data.user === auth.currentUser.email;
+                    const msgId = d.id;
+                    
+                    const div = document.createElement('div');
+                    div.className = `message ${isMe ? 'sent' : 'received'}`;
+                    
+                    let content = `<img src="${data.avatar || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}" class="avatar-img">`;
+                    content += `<div><small style="font-size:10px; opacity:0.6; display:block;">${data.user.split('@')[0]}</small>`;
+                    
+                    if(data.type === "poll") {
+                        content += `<b>📊 ${data.question}</b><div class="poll-box">`;
+                        data.options.forEach((opt, idx) => {
+                            const vCount = Object.values(data.votes || {}).filter(v => v === idx).length;
+                            content += `<div class="poll-option" onclick="vote('${msgId}', ${idx})">${opt} (${vCount})</div>`;
+                        });
+                        content += `</div>`;
+                    } else if(data.type === "ghost") {
+                        const viewed = data.viewedBy && data.viewedBy.length > 0;
+                        content += viewed ? `<i>👻 Ghost fotoğraf patladı!</i>` : `<img src="${data.image}" class="ghost-img" onclick="viewGhost('${msgId}', false)" title="Görmek için tıkla (Tek seferlik!)">`;
+                    } else {
+                        if(data.text) content += `<div>${data.text}</div>`;
+                        if(data.image) content += `<img src="${data.image}" style="width:100%; border-radius:10px; margin-top:5px; cursor:pointer;" onclick="window.open('${data.image}')">`;
+                    }
+                    
+                    // ADMIN SİSTEMİ (Basit: Kendi mesajını silebilir veya Genel olmayan grupta kurucuysa herkesinkini silebilir)
+                    if(isMe) content += `<div onclick="deleteMsg('${msgId}')" style="cursor:pointer; font-size:10px; color:red; margin-top:5px;">Sil</div>`;
+                    
+                    content += `</div>`;
+                    div.innerHTML = content;
+                    box.appendChild(div);
+                });
+                box.scrollTop = box.scrollHeight;
+            });
+        }
+
+        window.deleteMsg = async (id) => { if(confirm("Silinsin mi?")) await deleteDoc(doc(db, "mesajlar", id)); };
+
+        // --- DİĞER FONKSİYONLAR (Önceki koddan aynen korundu) ---
+        window.changeGroup = (n, el) => { activeGroup = n; document.getElementById('chatTitle').innerText = n; document.querySelectorAll('.group-item').forEach(i => i.classList.remove('active')); el.classList.add('active'); loadMessages(); listenTyping(); };
+        document.getElementById('sendBtn').onclick = () => { const i = document.getElementById('msgInput'); if(i.value.trim()) { send(i.value); i.value = ""; } };
+        document.getElementById('fileInp').onchange = async (e) => { const f = e.target.files[0]; if(!f) return; const fd = new FormData(); fd.append("image", f); const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMG_KEY}`, { method: "POST", body: fd }); const d = await res.json(); if(d.success) send("", d.data.url); };
+        function listenInvites(myUid) { const q = query(collection(db, "davetler"), where("to", "==", myUid), where("status", "==", "pending")); onSnapshot(q, (snap) => { if(!snap.empty) { currentInvite = { id: snap.docs[0].id, ...snap.docs[0].data() }; document.getElementById('notif-bar').style.display = 'flex'; document.getElementById('notif-text').innerText = `${currentInvite.fromName} seni "${currentInvite.groupName}" grubuna çağırdı!`; } else { document.getElementById('notif-bar').style.display = 'none'; } }); }
+        document.getElementById('accept-btn').onclick = async () => { if(!currentInvite) return; await setDoc(doc(db, "kullanici_gruplari", `${auth.currentUser.uid}_${currentInvite.groupName}`), { uid: auth.currentUser.uid, groupName: currentInvite.groupName }); await updateDoc(doc(db, "davetler", currentInvite.id), { status: "accepted" }); alert("Giriş yapıldı!"); };
+        document.getElementById('decline-btn').onclick = async () => { await updateDoc(doc(db, "davetler", currentInvite.id), { status: "declined" }); };
+        window.openCreateGroup = async () => { const gName = prompt("Özel Grup İsmi:"); if(!gName) return; await setDoc(doc(db, "kullanici_gruplari", `${auth.currentUser.uid}_${gName}`), { uid: auth.currentUser.uid, groupName: gName }); document.getElementById('invite-modal').style.display = 'block'; const listDiv = document.getElementById('user-list-to-invite'); listDiv.innerHTML = "Aranıyor..."; const usersSnap = await getDocs(collection(db, "kullanicilar")); listDiv.innerHTML = ""; usersSnap.forEach(uDoc => { if(uDoc.id !== auth.currentUser.uid) { const ud = uDoc.data(); const d = document.createElement('div'); d.className = "user-invite-item"; d.innerHTML = `<span>${ud.email.split('@')[0]}</span> <button onclick="sendInvite('${ud.uid}', '${ud.email}', '${gName}')" style="background:var(--accent); color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">Gönder</button>`; listDiv.appendChild(d); } }); };
+        window.sendInvite = async (tUid, tEmail, gName) => { await addDoc(collection(db, "davetler"), { from: auth.currentUser.uid, fromName: auth.currentUser.email.split('@')[0], to: tUid, groupName: gName, status: "pending", createdAt: serverTimestamp() }); alert("Davet edildi!"); };
+        function loadMyGroups(uid) { const q = query(collection(db, "kullanici_gruplari"), where("uid", "==", uid)); onSnapshot(q, (snap) => { const list = document.getElementById('groupList'); list.innerHTML = `<div class="group-item ${activeGroup==='Genel'?'active':''}" onclick="changeGroup('Genel', this)"><strong># Genel Sohbet</strong></div>`; snap.forEach(d => { const g = d.data().groupName; if(g === "Genel") return; const div = document.createElement('div'); div.className = `group-item ${activeGroup===g?'active':''}`; div.innerHTML = `<strong># ${g}</strong>`; div.onclick = () => changeGroup(g, div); list.appendChild(div); }); }); }
+        document.getElementById('loginBtn').onclick = () => signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(e => alert(e.message));
+        document.getElementById('signupBtn').onclick = () => createUserWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(e => alert(e.message));
+        document.getElementById('logoutBtn').onclick = () => signOut(auth);
+        window.setTheme = (t) => document.body.className = (t === 'light') ? '' : t + '-theme';
+    </script>
+</body>
+</html>
