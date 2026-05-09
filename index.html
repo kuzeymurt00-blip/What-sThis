@@ -2,13 +2,13 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WhatIsThis | Ultimate Neon</title>
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
         
         :root {
-            --bg-color: #d1d7db; --sidebar-bg: #ffffff; --header-bg: #f0f2f5;
+            --bg-color: #e5ddd5; --sidebar-bg: #ffffff; --header-bg: #f0f2f5;
             --text-color: #111b21; --accent: #00a884; --msg-sent: #dcf8c6;
             --msg-received: #ffffff; --neon-glow: none;
         }
@@ -24,56 +24,101 @@
             --msg-received: #002200; --neon-glow: 0 0 15px #bc13fe;
         }
 
-        * { padding: 0; margin: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; transition: 0.2s; }
+        * { padding: 0; margin: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; transition: 0.2s background-color, 0.2s color; }
         body { background-color: var(--bg-color); color: var(--text-color); height: 100vh; overflow: hidden; }
 
         /* Splash */
         #splash { position: fixed; width: 100%; height: 100vh; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
-        #splash h1 { color: var(--accent); font-size: 3em; letter-spacing: 5px; text-shadow: var(--neon-glow); }
+        #splash h1 { color: var(--accent); font-size: 3em; letter-spacing: 5px; text-shadow: var(--neon-glow); text-align: center; }
 
         /* Auth */
         #auth-section { display: none; justify-content: center; align-items: center; height: 100vh; background: #0b141a; }
-        .login-card { background: var(--sidebar-bg); padding: 30px; border-radius: 20px; width: 350px; text-align: center; box-shadow: var(--neon-glow); }
+        .login-card { background: var(--sidebar-bg); padding: 30px; border-radius: 20px; width: 90%; max-width: 350px; text-align: center; box-shadow: var(--neon-glow); }
         .login-card input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid #ccc; background: var(--header-bg); color: var(--text-color); outline: none; }
         .login-card button { width: 100%; padding: 12px; background: var(--accent); border: none; color: white; border-radius: 10px; cursor: pointer; font-weight: 600; margin-top: 10px; }
 
         /* Layout */
         #app-section { display: none; height: 100vh; flex-direction: column; }
-        .container { display: flex; flex: 1; height: calc(100vh - 70px); }
-        .sidebar { width: 320px; background: var(--sidebar-bg); display: flex; flex-direction: column; border-right: 1px solid rgba(0,0,0,0.1); }
-        .header { height: 65px; background: var(--header-bg); padding: 0 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .container { display: flex; flex: 1; height: calc(100vh - 65px); overflow: hidden; }
+        .sidebar { width: 320px; background: var(--sidebar-bg); display: flex; flex-direction: column; border-right: 1px solid rgba(0,0,0,0.1); z-index: 10; }
+        .header { height: 65px; min-height: 65px; background: var(--header-bg); padding: 0 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.05); }
 
         .group-list { flex: 1; overflow-y: auto; }
-        .group-item { padding: 15px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between; }
+        .group-item { padding: 15px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.03); display: flex; align-items: center; gap: 15px; }
+        .group-item:hover { background: rgba(0,0,0,0.05); }
         .group-item.active { background: rgba(0,168,132,0.1); border-left: 5px solid var(--accent); color: var(--accent); }
 
         /* Chat */
-        .main-chat { flex: 1; display: flex; flex-direction: column; background: rgba(0,0,0,0.02); position: relative; }
-        .messages-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; }
-        .message { max-width: 70%; padding: 10px 15px; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); position: relative; display: flex; gap: 10px; }
-        .sent { background: var(--msg-sent); align-self: flex-end; flex-direction: row-reverse; }
-        .received { background: var(--msg-received); align-self: flex-start; }
-        .avatar-img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid var(--accent); }
+        .main-chat { flex: 1; display: flex; flex-direction: column; background-color: var(--bg-color); position: relative; }
+        .messages-container { 
+            flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; 
+            background-size: cover; background-position: center; background-attachment: fixed;
+        }
+        .message-wrapper { display: flex; width: 100%; margin-bottom: 10px; gap: 10px; }
+        .message-wrapper.sent { justify-content: flex-end; flex-direction: row-reverse; }
+        .message-wrapper.received { justify-content: flex-start; }
+        
+        .message { max-width: 75%; padding: 8px 12px; border-radius: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); position: relative; display: flex; flex-direction: column; min-width: 120px; }
+        .sent .message { background: var(--msg-sent); border-top-right-radius: 0; }
+        .received .message { background: var(--msg-received); border-top-left-radius: 0; }
+        
+        .msg-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+        .msg-user { font-size: 12px; font-weight: 600; color: var(--accent); }
+        .msg-time { font-size: 10px; opacity: 0.6; text-align: right; margin-top: 4px; display: flex; justify-content: flex-end; align-items: center; gap: 5px; }
+        
+        .avatar-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 1px solid var(--accent); flex-shrink: 0; }
+        .msg-avatar { width: 35px; height: 35px; border-radius: 50%; flex-shrink: 0; object-fit: cover; }
 
         /* Ghost Mode */
-        .ghost-img { filter: blur(10px); cursor: pointer; transition: 0.3s; }
+        .ghost-img { filter: blur(15px); cursor: pointer; transition: 0.3s; width: 100%; max-width: 250px; border-radius: 10px; margin-top: 5px; }
+        .ghost-img:hover { filter: blur(10px); }
         .ghost-img.viewed { display: none !important; }
 
         /* Anket */
-        .poll-box { background: rgba(0,0,0,0.05); padding: 10px; border-radius: 10px; margin-top: 5px; width: 200px; }
-        .poll-option { background: var(--accent); color: white; padding: 5px; margin: 5px 0; border-radius: 5px; cursor: pointer; text-align: center; font-size: 12px; }
+        .poll-box { background: rgba(0,0,0,0.05); padding: 10px; border-radius: 10px; margin-top: 5px; width: 100%; min-width: 200px; }
+        .poll-option { background: var(--accent); color: white; padding: 8px; margin: 5px 0; border-radius: 5px; cursor: pointer; text-align: center; font-size: 13px; font-weight: 600; }
+        .poll-option:hover { filter: brightness(1.1); }
 
         /* Modals */
-        #invite-modal, #profile-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 380px; max-height: 450px; background: var(--sidebar-bg); z-index: 1000; border-radius: 20px; padding: 20px; box-shadow: 0 0 40px rgba(0,0,0,0.5); border: 2px solid var(--accent); }
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 400px; max-height: 80vh; background: var(--sidebar-bg); z-index: 1000; border-radius: 20px; padding: 20px; box-shadow: 0 0 40px rgba(0,0,0,0.5); border: 2px solid var(--accent); overflow-y: auto; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; }
+        
         .user-invite-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid rgba(0,0,0,0.05); }
 
-        #notif-bar { display: none; background: var(--accent); color: white; padding: 12px 20px; justify-content: space-between; align-items: center; z-index: 1001; font-weight: bold; }
-        #typing-indicator { font-size: 12px; font-style: italic; padding: 5px 20px; color: var(--accent); min-height: 20px; }
+        #notif-bar { display: none; background: var(--accent); color: white; padding: 12px 20px; justify-content: space-between; align-items: center; z-index: 1001; font-weight: bold; position: fixed; top: 0; width: 100%; }
+        #typing-indicator { font-size: 12px; font-style: italic; padding: 5px 20px; color: var(--accent); min-height: 25px; background: rgba(0,0,0,0.02); }
 
-        .input-area { height: 75px; background: var(--header-bg); display: flex; align-items: center; padding: 0 15px; gap: 10px; }
-        .input-area input { flex: 1; padding: 14px 20px; border-radius: 30px; border: none; outline: none; background: var(--sidebar-bg); color: var(--text-color); }
+        .input-area { min-height: 65px; background: var(--header-bg); display: flex; align-items: center; padding: 10px 15px; gap: 10px; }
+        .input-area input { flex: 1; padding: 12px 20px; border-radius: 30px; border: none; outline: none; background: var(--sidebar-bg); color: var(--text-color); font-size: 15px; }
         
         .sidebar-footer { padding: 15px; background: var(--header-bg); display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(0,0,0,0.05); }
+        
+        .btn-icon { background: none; border: none; cursor: pointer; font-size: 22px; transition: 0.2s; color: var(--text-color); display: flex; align-items: center; justify-content: center; }
+        .btn-icon:hover { transform: scale(1.1); }
+        
+        .action-icon { font-size: 14px; cursor: pointer; opacity: 0.6; transition: 0.2s; }
+        .action-icon:hover { opacity: 1; color: red; }
+
+        /* Responsive Mobile WhatsApp Style */
+        .mobile-only { display: none !important; }
+        
+        @media (max-width: 768px) {
+            .container { flex-direction: column; }
+            .sidebar { width: 100%; height: 100%; border-right: none; }
+            .main-chat { display: none; width: 100%; height: 100%; }
+            
+            .mobile-active-chat .sidebar { display: none; }
+            .mobile-active-chat .main-chat { display: flex; }
+            
+            .mobile-only { display: flex !important; }
+            .desktop-only { display: none !important; }
+            
+            .message { max-width: 85%; }
+            .input-area { padding: 10px 5px; gap: 5px; }
+            .btn-icon { font-size: 20px; }
+            .avatar-img { width: 40px; height: 40px; }
+            .msg-avatar { width: 25px; height: 25px; }
+        }
     </style>
 </head>
 <body>
@@ -81,73 +126,131 @@
     <div id="splash"><h1>WhatIsThis</h1><p style="color:#444; letter-spacing: 2px;">ABSOLUTE STUDIOS</p></div>
 
     <div id="notif-bar">
-        <span id="notif-text">Yeni bir davet!</span>
-        <div>
+        <span id="notif-text" style="flex:1;">Yeni bir davet!</span>
+        <div style="display:flex; gap:10px;">
             <button id="accept-btn" style="padding:5px 12px; border-radius:5px; border:none; background:white; color:black; cursor:pointer; font-weight:bold;">Kabul Et</button>
-            <button id="decline-btn" style="padding:5px 12px; border-radius:5px; border:none; background:rgba(0,0,0,0.2); color:white; cursor:pointer; margin-left:5px;">X</button>
+            <button id="decline-btn" style="padding:5px 12px; border-radius:5px; border:none; background:rgba(0,0,0,0.2); color:white; cursor:pointer;">X</button>
         </div>
     </div>
 
-    <div id="profile-modal">
-        <h3 style="color:var(--accent)">Profilini Düzenle</h3>
-        <input type="file" id="avatarInp" accept="image/*" style="margin: 10px 0;">
-        <button onclick="updateAvatar()" style="width:100%; padding:10px; background:var(--accent); color:white; border:none; border-radius:10px; cursor:pointer;">Avatarı Güncelle</button>
-        <button onclick="document.getElementById('profile-modal').style.display='none'" style="width:100%; margin-top:5px; padding:10px; border:none; background:none; color:var(--text-color); cursor:pointer;">Kapat</button>
+    <!-- Modals Overlay -->
+    <div class="modal-overlay" id="modal-overlay" onclick="closeModals()"></div>
+
+    <!-- Ayarlar Modal -->
+    <div id="settings-modal" class="modal">
+        <h3 style="color:var(--accent); margin-bottom:15px; text-align:center;">Ayarlar & Özellikler</h3>
+        
+        <div style="background: rgba(0,0,0,0.05); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+            <label style="display:block; margin-bottom:10px; font-weight:bold;">Sohbet Arka Planı (Sadece Sen Görürsün)</label>
+            <input type="file" id="bgInp" accept="image/*" style="margin-bottom:10px; width:100%; font-size:12px;">
+            <button onclick="updateBackground()" style="width:100%; padding:10px; background:var(--accent); color:white; border:none; border-radius:10px; cursor:pointer; margin-bottom:10px; font-weight:bold;">Arka Planı Değiştir</button>
+            <button onclick="clearBackground()" style="width:100%; padding:10px; background:#ff3b3b; color:white; border:none; border-radius:10px; cursor:pointer; font-weight:bold;">Arka Planı Sıfırla</button>
+        </div>
+        
+        <div style="background: rgba(0,0,0,0.05); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+            <label style="display:block; margin-bottom:10px; font-weight:bold;">Tema Seçimi</label>
+            <select id="themeSelector" onchange="setTheme(this.value)" style="width:100%; padding:10px; border-radius:10px; background:var(--header-bg); color:var(--text-color); border:1px solid var(--accent);">
+                <option value="light">Aydınlık</option>
+                <option value="dark">Karanlık</option>
+                <option value="neon">Neon</option>
+            </select>
+        </div>
+        
+        <button onclick="closeModals()" style="width:100%; padding:10px; border:none; background:var(--header-bg); color:var(--text-color); border-radius:10px; cursor:pointer; font-weight:bold;">Kapat</button>
     </div>
 
+    <!-- Profil Modal -->
+    <div id="profile-modal" class="modal">
+        <h3 style="color:var(--accent); margin-bottom:15px; text-align:center;">Profilini Düzenle</h3>
+        <div style="text-align:center; margin-bottom:15px;">
+            <img id="profilePreview" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:3px solid var(--accent);">
+        </div>
+        <input type="file" id="avatarInp" accept="image/*" style="margin: 10px 0; width:100%;">
+        <button onclick="updateAvatar()" style="width:100%; padding:10px; background:var(--accent); color:white; border:none; border-radius:10px; cursor:pointer; font-weight:bold; margin-bottom:10px;">Avatarı Güncelle</button>
+        <button onclick="closeModals()" style="width:100%; padding:10px; border:none; background:var(--header-bg); color:var(--text-color); border-radius:10px; cursor:pointer; font-weight:bold;">Kapat</button>
+    </div>
+
+    <!-- Davet Modal -->
+    <div id="invite-modal" class="modal">
+        <h3 style="margin-bottom:15px; color:var(--accent); text-align:center;">Kullanıcı Davet Et</h3>
+        <div id="user-list-to-invite" style="overflow-y:auto; max-height:250px; background:rgba(0,0,0,0.02); border-radius:10px; padding:5px;"></div>
+        <button onclick="closeModals()" style="width:100%; margin-top:15px; padding:10px; border-radius:10px; border:none; background:var(--header-bg); color:var(--text-color); cursor:pointer; font-weight:bold;">Kapat</button>
+    </div>
+
+    <!-- Auth Section -->
     <section id="auth-section">
         <div class="login-card">
-            <h2 style="color:var(--accent); margin-bottom:15px;">WhatIsThis</h2>
+            <h2 style="color:var(--accent); margin-bottom:20px; font-size:28px;">WhatIsThis</h2>
             <input type="email" id="email" placeholder="E-posta">
             <input type="password" id="password" placeholder="Şifre">
             <button id="loginBtn">Giriş Yap</button>
-            <button id="signupBtn" style="background:none; color:var(--accent); border:1px solid var(--accent); margin-top:10px;">Hesap Oluştur</button>
+            <button id="signupBtn" style="background:none; color:var(--accent); border:2px solid var(--accent); margin-top:10px;">Hesap Oluştur</button>
         </div>
     </section>
 
-    <div id="invite-modal">
-        <h3 style="margin-bottom:15px; color:var(--accent);">Kullanıcı Davet Et</h3>
-        <div id="user-list-to-invite" style="overflow-y:auto; max-height:300px;"></div>
-        <button onclick="document.getElementById('invite-modal').style.display='none'" style="width:100%; margin-top:15px; padding:10px; border-radius:10px; border:none; background:var(--header-bg); color:var(--text-color); cursor:pointer;">Kapat</button>
-    </div>
-
+    <!-- App Section -->
     <section id="app-section">
-        <div class="container">
+        <div class="container" id="mainContainer">
+            <!-- Sidebar (Grup Listesi) -->
             <div class="sidebar">
                 <div class="header">
-                    <button onclick="openCreateGroup()" style="background:var(--accent); color:white; border:none; padding:10px; border-radius:10px; cursor:pointer; width:100%; font-weight:600;">+ Yeni Özel Grup</button>
+                    <img id="myAvatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="avatar-img" onclick="openModal('profile-modal')" style="cursor:pointer" title="Profil">
+                    <button onclick="openModal('settings-modal')" class="btn-icon" title="Ayarlar">⚙️</button>
+                </div>
+                <div style="padding: 10px;">
+                    <button onclick="openCreateGroup()" style="background:var(--accent); color:white; border:none; padding:12px; border-radius:10px; cursor:pointer; width:100%; font-weight:600; display:flex; justify-content:center; align-items:center; gap:10px;">
+                        <span>➕</span> Yeni Özel Grup
+                    </button>
                 </div>
                 <div class="group-list" id="groupList">
-                    <div class="group-item active" onclick="changeGroup('Genel', this)"><strong># Genel Sohbet</strong></div>
+                    <div class="group-item active" onclick="changeGroup('Genel', this)">
+                        <div style="width:45px; height:45px; border-radius:50%; background:var(--accent); color:white; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:bold;">#</div>
+                        <div style="flex:1;">
+                            <strong style="display:block; font-size:15px;">Genel Sohbet</strong>
+                            <small style="opacity:0.6;">Herkese açık alan</small>
+                        </div>
+                    </div>
                 </div>
                 <div class="sidebar-footer">
-                    <img id="myAvatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="avatar-img" onclick="document.getElementById('profile-modal').style.display='block'" style="cursor:pointer">
-                    <span id="userDisp" style="font-weight:bold; color:var(--accent);"></span>
-                    <button id="logoutBtn" style="color:#ff3b3b; border:none; background:none; cursor:pointer; font-weight:bold;">ÇIKIŞ</button>
+                    <span id="userDisp" style="font-weight:bold; color:var(--accent); font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:150px;"></span>
+                    <button id="logoutBtn" style="color:#ff3b3b; border:none; background:none; cursor:pointer; font-weight:bold; display:flex; align-items:center; gap:5px;">
+                        ÇIKIŞ <span style="font-size:18px;">🚪</span>
+                    </button>
                 </div>
             </div>
 
+            <!-- Ana Sohbet Alanı -->
             <div class="main-chat">
                 <div class="header">
-                    <b id="chatTitle">Genel Sohbet</b>
-                    <div style="display:flex; gap:10px;">
-                        <button onclick="sendPoll()" style="background:none; border:none; cursor:pointer; font-size:20px;">📊</button>
-                        <select id="themeSelector" onchange="setTheme(this.value)" style="padding:5px; border-radius:5px; background:var(--sidebar-bg); color:var(--text-color); border:1px solid var(--accent);">
-                            <option value="light">Aydınlık</option>
-                            <option value="dark">Karanlık</option>
-                            <option value="neon">Neon</option>
-                        </select>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <button class="mobile-only btn-icon" onclick="goBack()">⬅️</button>
+                        <div id="chatAvatarBadge" style="width:40px; height:40px; border-radius:50%; background:var(--accent); color:white; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:bold;">#</div>
+                        <b id="chatTitle" style="font-size:16px;">Genel Sohbet</b>
+                    </div>
+                    <div style="display:flex; gap:15px; align-items:center;">
+                        <button class="btn-icon" title="Görüntülü Arama (Yakında)" onclick="alert('Görüntülü arama özelliği yakında eklenecek!')">📹</button>
+                        <button class="btn-icon" title="Sesli Arama (Yakında)" onclick="alert('Sesli arama özelliği yakında eklenecek!')">📞</button>
+                        <button onclick="openModal('settings-modal')" class="btn-icon desktop-only" title="Ayarlar">⚙️</button>
                     </div>
                 </div>
+                
                 <div class="messages-container" id="chatBox"></div>
+                
                 <div id="typing-indicator"></div>
+                
                 <div class="input-area">
-                    <button onclick="document.getElementById('ghostInp').click()" title="Ghost Photo" style="background:none; border:none; font-size:22px; cursor:pointer;">👻</button>
-                    <button onclick="document.getElementById('fileInp').click()" style="background:none; border:none; font-size:22px; cursor:pointer;">🖼️</button>
+                    <button class="btn-icon" title="Emoji (Yakında)" onclick="alert('Emoji menüsü yakında eklenecek!')">😀</button>
+                    <button onclick="document.getElementById('fileInp').click()" class="btn-icon" title="Fotoğraf Gönder">📎</button>
+                    <button onclick="document.getElementById('ghostInp').click()" class="btn-icon" title="Ghost (Süreli) Fotoğraf">👻</button>
+                    <button onclick="sendPoll()" class="btn-icon" title="Anket Oluştur">📊</button>
+                    
                     <input type="file" id="fileInp" style="display:none" accept="image/*">
                     <input type="file" id="ghostInp" style="display:none" accept="image/*">
-                    <input type="text" id="msgInput" placeholder="Mesaj yazın...">
-                    <button id="sendBtn" style="background:var(--accent); color:white; border:none; width:45px; height:45px; border-radius:50%; cursor:pointer; font-size:20px;">➔</button>
+                    <input type="text" id="msgInput" placeholder="Bir mesaj yazın...">
+                    
+                    <button id="sendBtn" style="background:var(--accent); color:white; border:none; width:45px; height:45px; border-radius:50%; cursor:pointer; font-size:20px; display:flex; align-items:center; justify-content:center; transition:0.2s;">
+                        <span id="sendIcon">➤</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -179,6 +282,80 @@
 
         setPersistence(auth, browserLocalPersistence);
 
+        // --- UI & MODAL YÖNETİMİ ---
+        window.openModal = (id) => {
+            document.getElementById('modal-overlay').style.display = 'block';
+            document.getElementById(id).style.display = 'block';
+        };
+        window.closeModals = () => {
+            document.getElementById('modal-overlay').style.display = 'none';
+            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+        };
+        window.goBack = () => {
+            document.getElementById('mainContainer').classList.remove('mobile-active-chat');
+        };
+
+        // Input değişikliğinde mikrofondan gönder butonuna geçiş efekti
+        document.getElementById('msgInput').addEventListener('input', (e) => {
+            const btn = document.getElementById('sendIcon');
+            if(e.target.value.trim().length > 0) {
+                btn.innerText = '➤';
+            } else {
+                btn.innerText = '🎤'; // Yakında eklenecek sesli mesaj simgesi
+            }
+        });
+
+        // Enter ile gönderme
+        document.getElementById('msgInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('sendBtn').click();
+            }
+        });
+
+        // Arka Plan Yönetimi
+        window.applyBackground = () => {
+            const bg = localStorage.getItem('customBg');
+            const chatBox = document.getElementById('chatBox');
+            if(bg) {
+                chatBox.style.backgroundImage = `url('${bg}')`;
+            } else {
+                chatBox.style.backgroundImage = 'none';
+            }
+        };
+        
+        window.updateBackground = async () => {
+            const f = document.getElementById('bgInp').files[0];
+            if(!f) { alert("Lütfen bir resim seçin!"); return; }
+            
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = "Yükleniyor...";
+            btn.disabled = true;
+            
+            const fd = new FormData(); fd.append("image", f);
+            try {
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMG_KEY}`, { method: "POST", body: fd });
+                const d = await res.json();
+                if(d.success) {
+                    localStorage.setItem('customBg', d.data.url);
+                    applyBackground();
+                    alert("Arka plan başarıyla güncellendi!");
+                } else {
+                    alert("Yükleme başarısız oldu.");
+                }
+            } catch(e) {
+                alert("Bağlantı hatası!");
+            }
+            btn.innerText = originalText;
+            btn.disabled = false;
+        };
+        
+        window.clearBackground = () => {
+            localStorage.removeItem('customBg');
+            applyBackground();
+            alert("Arka plan sıfırlandı!");
+        };
+
         onAuthStateChanged(auth, async (u) => {
             document.getElementById('splash').style.display = 'none';
             if (u) {
@@ -186,10 +363,17 @@
                 document.getElementById('app-section').style.display = 'flex';
                 document.getElementById('userDisp').innerText = u.email.split('@')[0];
                 
+                // Tercih edilen temayı ve arkaplanı yükle
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                document.getElementById('themeSelector').value = savedTheme;
+                setTheme(savedTheme);
+                applyBackground();
+                
                 const uDoc = await getDocs(query(collection(db, "kullanicilar"), where("uid", "==", u.uid)));
                 if(!uDoc.empty && uDoc.docs[0].data().avatar) {
                     myAvatarUrl = uDoc.docs[0].data().avatar;
                     document.getElementById('myAvatar').src = myAvatarUrl;
+                    document.getElementById('profilePreview').src = myAvatarUrl;
                 }
                 
                 await setDoc(doc(db, "kullanicilar", u.uid), { email: u.email, uid: u.uid, avatar: myAvatarUrl }, { merge: true });
@@ -206,7 +390,13 @@
         // --- AVATAR GÜNCELLEME ---
         window.updateAvatar = async () => {
             const f = document.getElementById('avatarInp').files[0];
-            if(!f) return;
+            if(!f) { alert("Resim seçin!"); return; }
+            
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = "Yükleniyor...";
+            btn.disabled = true;
+            
             const fd = new FormData(); fd.append("image", f);
             const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMG_KEY}`, { method: "POST", body: fd });
             const d = await res.json();
@@ -214,28 +404,38 @@
                 myAvatarUrl = d.data.url;
                 await updateDoc(doc(db, "kullanicilar", auth.currentUser.uid), { avatar: myAvatarUrl });
                 document.getElementById('myAvatar').src = myAvatarUrl;
-                document.getElementById('profile-modal').style.display = 'none';
+                document.getElementById('profilePreview').src = myAvatarUrl;
+                closeModals();
                 alert("Profil resmi güncellendi!");
             }
+            btn.innerText = originalText;
+            btn.disabled = false;
         };
 
         // --- YAZIYOR SİSTEMİ ---
         const typingRef = (group) => doc(db, "typing", group);
-        document.getElementById('msgInput').oninput = async (e) => {
-            if(e.target.value.length > 0) {
+        let typingTimeout;
+        document.getElementById('msgInput').addEventListener('input', async (e) => {
+            if(e.target.value.trim().length > 0) {
                 await setDoc(typingRef(activeGroup), { [auth.currentUser.uid]: auth.currentUser.email.split('@')[0] }, { merge: true });
-                setTimeout(async () => {
+                clearTimeout(typingTimeout);
+                typingTimeout = setTimeout(async () => {
                     await setDoc(typingRef(activeGroup), { [auth.currentUser.uid]: null }, { merge: true });
-                }, 3000);
+                }, 2000);
             }
-        };
+        });
 
         function listenTyping() {
             onSnapshot(doc(db, "typing", activeGroup), (s) => {
                 if(s.exists()) {
                     const data = s.data();
                     const typers = Object.values(data).filter(v => v && v !== auth.currentUser.email.split('@')[0]);
-                    document.getElementById('typing-indicator').innerText = typers.length > 0 ? typers.join(', ') + " yazıyor..." : "";
+                    const ind = document.getElementById('typing-indicator');
+                    if(typers.length > 0) {
+                        ind.innerHTML = `<span style="color:var(--accent);">✏️ ${typers.join(', ')} yazıyor...</span>`;
+                    } else {
+                        ind.innerHTML = "";
+                    }
                 }
             });
         }
@@ -245,7 +445,9 @@
             const q = prompt("Anket Sorusu:");
             if(!q) return;
             const o1 = prompt("Seçenek 1:");
+            if(!o1) return;
             const o2 = prompt("Seçenek 2:");
+            if(!o2) return;
             await addDoc(collection(db, "mesajlar"), {
                 type: "poll", question: q, options: [o1, o2], votes: {},
                 user: auth.currentUser.email, avatar: myAvatarUrl, group: activeGroup, createdAt: serverTimestamp()
@@ -271,8 +473,8 @@
             }
         };
 
-        window.viewGhost = async (msgId, alreadyViewed) => {
-            if(alreadyViewed) return;
+        window.viewGhost = async (msgId, isViewed) => {
+            if(isViewed) { alert("Bu fotoğraf zaten patladı!"); return; }
             const ref = doc(db, "mesajlar", msgId);
             await updateDoc(ref, { viewedBy: [auth.currentUser.uid] }); // Basit mantık: Bir kişi bakınca patlar
         };
@@ -289,60 +491,222 @@
             if(unsubscribeMsg) unsubscribeMsg();
             const q = query(collection(db, "mesajlar"), where("group", "==", activeGroup), orderBy("createdAt", "asc"));
             unsubscribeMsg = onSnapshot(q, (snap) => {
-                const box = document.getElementById('chatBox'); box.innerHTML = "";
+                const box = document.getElementById('chatBox'); 
+                const isScrolledToBottom = box.scrollHeight - box.clientHeight <= box.scrollTop + 50;
+                
+                box.innerHTML = "";
+                
+                // Gruplandırma için önceki mesaj sahibini takip edelim
+                let lastSender = null;
+                
                 snap.forEach(d => {
                     const data = d.data();
                     const isMe = data.user === auth.currentUser.email;
                     const msgId = d.id;
+                    const timeStr = data.createdAt ? data.createdAt.toDate().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '...';
                     
-                    const div = document.createElement('div');
-                    div.className = `message ${isMe ? 'sent' : 'received'}`;
+                    const wrapper = document.createElement('div');
+                    wrapper.className = `message-wrapper ${isMe ? 'sent' : 'received'}`;
                     
-                    let content = `<img src="${data.avatar || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}" class="avatar-img">`;
-                    content += `<div><small style="font-size:10px; opacity:0.6; display:block;">${data.user.split('@')[0]}</small>`;
+                    const showAvatar = lastSender !== data.user;
+                    lastSender = data.user;
+                    
+                    let content = ``;
+                    
+                    if(!isMe) {
+                        content += `<img src="${data.avatar || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}" class="msg-avatar" style="visibility: ${showAvatar ? 'visible' : 'hidden'}">`;
+                    }
+                    
+                    content += `<div class="message">`;
+                    
+                    if(!isMe && showAvatar) {
+                        content += `<div class="msg-user">${data.user.split('@')[0]}</div>`;
+                    }
                     
                     if(data.type === "poll") {
                         content += `<b>📊 ${data.question}</b><div class="poll-box">`;
                         data.options.forEach((opt, idx) => {
                             const vCount = Object.values(data.votes || {}).filter(v => v === idx).length;
-                            content += `<div class="poll-option" onclick="vote('${msgId}', ${idx})">${opt} (${vCount})</div>`;
+                            content += `<div class="poll-option" onclick="vote('${msgId}', ${idx})">${opt} <span style="background:rgba(0,0,0,0.3); padding:2px 6px; border-radius:10px; margin-left:5px;">${vCount}</span></div>`;
                         });
                         content += `</div>`;
                     } else if(data.type === "ghost") {
                         const viewed = data.viewedBy && data.viewedBy.length > 0;
-                        content += viewed ? `<i>👻 Ghost fotoğraf patladı!</i>` : `<img src="${data.image}" class="ghost-img" onclick="viewGhost('${msgId}', false)" title="Görmek için tıkla (Tek seferlik!)">`;
+                        if(viewed) {
+                            content += `<div style="font-style:italic; opacity:0.7; padding:10px; text-align:center;">👻 Süreli fotoğraf patladı!</div>`;
+                        } else {
+                            content += `<img src="${data.image}" class="ghost-img" onclick="viewGhost('${msgId}', false)" title="Görmek için tıkla (Tek seferlik!)">`;
+                            content += `<div style="font-size:10px; text-align:center; opacity:0.8; margin-top:5px;">Süreli Fotoğraf (Tıkla ve Gör)</div>`;
+                        }
                     } else {
-                        if(data.text) content += `<div>${data.text}</div>`;
-                        if(data.image) content += `<img src="${data.image}" style="width:100%; border-radius:10px; margin-top:5px; cursor:pointer;" onclick="window.open('${data.image}')">`;
+                        if(data.image) content += `<img src="${data.image}" style="width:100%; border-radius:8px; margin-bottom:5px; cursor:pointer;" onclick="window.open('${data.image}')">`;
+                        if(data.text) content += `<div style="word-wrap:break-word;">${data.text}</div>`;
                     }
                     
-                    // ADMIN SİSTEMİ (Basit: Kendi mesajını silebilir veya Genel olmayan grupta kurucuysa herkesinkini silebilir)
-                    if(isMe) content += `<div onclick="deleteMsg('${msgId}')" style="cursor:pointer; font-size:10px; color:red; margin-top:5px;">Sil</div>`;
+                    content += `<div class="msg-time">${timeStr} `;
+                    if(isMe) {
+                        content += `<span class="action-icon" title="Sil" onclick="deleteMsg('${msgId}')">🗑️</span>`;
+                        content += `<span style="color:var(--accent); margin-left:3px;">✓✓</span>`;
+                    }
+                    content += `</div></div>`;
                     
-                    content += `</div>`;
-                    div.innerHTML = content;
-                    box.appendChild(div);
+                    wrapper.innerHTML = content;
+                    box.appendChild(wrapper);
                 });
-                box.scrollTop = box.scrollHeight;
+                
+                // Scroll behavior
+                if (isScrolledToBottom) {
+                    box.scrollTop = box.scrollHeight;
+                } else {
+                    // Sadece yeni mesaj gelince hafifçe aşağı kaydır
+                    box.scrollTop = box.scrollHeight; 
+                }
             });
         }
 
-        window.deleteMsg = async (id) => { if(confirm("Silinsin mi?")) await deleteDoc(doc(db, "mesajlar", id)); };
+        window.deleteMsg = async (id) => { if(confirm("Mesajı herkesden silmek istiyor musun?")) await deleteDoc(doc(db, "mesajlar", id)); };
 
-        // --- DİĞER FONKSİYONLAR (Önceki koddan aynen korundu) ---
-        window.changeGroup = (n, el) => { activeGroup = n; document.getElementById('chatTitle').innerText = n; document.querySelectorAll('.group-item').forEach(i => i.classList.remove('active')); el.classList.add('active'); loadMessages(); listenTyping(); };
-        document.getElementById('sendBtn').onclick = () => { const i = document.getElementById('msgInput'); if(i.value.trim()) { send(i.value); i.value = ""; } };
-        document.getElementById('fileInp').onchange = async (e) => { const f = e.target.files[0]; if(!f) return; const fd = new FormData(); fd.append("image", f); const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMG_KEY}`, { method: "POST", body: fd }); const d = await res.json(); if(d.success) send("", d.data.url); };
-        function listenInvites(myUid) { const q = query(collection(db, "davetler"), where("to", "==", myUid), where("status", "==", "pending")); onSnapshot(q, (snap) => { if(!snap.empty) { currentInvite = { id: snap.docs[0].id, ...snap.docs[0].data() }; document.getElementById('notif-bar').style.display = 'flex'; document.getElementById('notif-text').innerText = `${currentInvite.fromName} seni "${currentInvite.groupName}" grubuna çağırdı!`; } else { document.getElementById('notif-bar').style.display = 'none'; } }); }
-        document.getElementById('accept-btn').onclick = async () => { if(!currentInvite) return; await setDoc(doc(db, "kullanici_gruplari", `${auth.currentUser.uid}_${currentInvite.groupName}`), { uid: auth.currentUser.uid, groupName: currentInvite.groupName }); await updateDoc(doc(db, "davetler", currentInvite.id), { status: "accepted" }); alert("Giriş yapıldı!"); };
-        document.getElementById('decline-btn').onclick = async () => { await updateDoc(doc(db, "davetler", currentInvite.id), { status: "declined" }); };
-        window.openCreateGroup = async () => { const gName = prompt("Özel Grup İsmi:"); if(!gName) return; await setDoc(doc(db, "kullanici_gruplari", `${auth.currentUser.uid}_${gName}`), { uid: auth.currentUser.uid, groupName: gName }); document.getElementById('invite-modal').style.display = 'block'; const listDiv = document.getElementById('user-list-to-invite'); listDiv.innerHTML = "Aranıyor..."; const usersSnap = await getDocs(collection(db, "kullanicilar")); listDiv.innerHTML = ""; usersSnap.forEach(uDoc => { if(uDoc.id !== auth.currentUser.uid) { const ud = uDoc.data(); const d = document.createElement('div'); d.className = "user-invite-item"; d.innerHTML = `<span>${ud.email.split('@')[0]}</span> <button onclick="sendInvite('${ud.uid}', '${ud.email}', '${gName}')" style="background:var(--accent); color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">Gönder</button>`; listDiv.appendChild(d); } }); };
-        window.sendInvite = async (tUid, tEmail, gName) => { await addDoc(collection(db, "davetler"), { from: auth.currentUser.uid, fromName: auth.currentUser.email.split('@')[0], to: tUid, groupName: gName, status: "pending", createdAt: serverTimestamp() }); alert("Davet edildi!"); };
-        function loadMyGroups(uid) { const q = query(collection(db, "kullanici_gruplari"), where("uid", "==", uid)); onSnapshot(q, (snap) => { const list = document.getElementById('groupList'); list.innerHTML = `<div class="group-item ${activeGroup==='Genel'?'active':''}" onclick="changeGroup('Genel', this)"><strong># Genel Sohbet</strong></div>`; snap.forEach(d => { const g = d.data().groupName; if(g === "Genel") return; const div = document.createElement('div'); div.className = `group-item ${activeGroup===g?'active':''}`; div.innerHTML = `<strong># ${g}</strong>`; div.onclick = () => changeGroup(g, div); list.appendChild(div); }); }); }
+        // --- GRUPLAR VE DAVETLER ---
+        window.changeGroup = (n, el) => { 
+            activeGroup = n; 
+            document.getElementById('chatTitle').innerText = n; 
+            
+            // Eğer grup genel ise, # ikonu yap, değilse ilk harfini al
+            const badge = document.getElementById('chatAvatarBadge');
+            badge.innerText = n === 'Genel' ? '#' : n.charAt(0).toUpperCase();
+            
+            document.querySelectorAll('.group-item').forEach(i => i.classList.remove('active')); 
+            if(el) el.classList.add('active'); 
+            
+            // Mobil için chat'i aktif yap
+            document.getElementById('mainContainer').classList.add('mobile-active-chat');
+            
+            loadMessages(); 
+            listenTyping(); 
+        };
+
+        document.getElementById('sendBtn').onclick = () => { 
+            const i = document.getElementById('msgInput'); 
+            if(i.value.trim()) { 
+                send(i.value); 
+                i.value = ""; 
+                document.getElementById('sendIcon').innerText = '🎤';
+                // Yazıyor durumunu temizle
+                clearTimeout(typingTimeout);
+                setDoc(typingRef(activeGroup), { [auth.currentUser.uid]: null }, { merge: true });
+            } else {
+                alert("Sesli mesaj yakında eklenecek!");
+            }
+        };
+
+        document.getElementById('fileInp').onchange = async (e) => { 
+            const f = e.target.files[0]; if(!f) return; 
+            const fd = new FormData(); fd.append("image", f); 
+            try {
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMG_KEY}`, { method: "POST", body: fd }); 
+                const d = await res.json(); 
+                if(d.success) send("", d.data.url); 
+            } catch(e) {
+                alert("Fotoğraf gönderilemedi!");
+            }
+        };
+
+        function listenInvites(myUid) { 
+            const q = query(collection(db, "davetler"), where("to", "==", myUid), where("status", "==", "pending")); 
+            onSnapshot(q, (snap) => { 
+                if(!snap.empty) { 
+                    currentInvite = { id: snap.docs[0].id, ...snap.docs[0].data() }; 
+                    document.getElementById('notif-bar').style.display = 'flex'; 
+                    document.getElementById('notif-text').innerText = `🔔 ${currentInvite.fromName} seni "${currentInvite.groupName}" grubuna davet etti!`; 
+                } else { 
+                    document.getElementById('notif-bar').style.display = 'none'; 
+                } 
+            }); 
+        }
+
+        document.getElementById('accept-btn').onclick = async () => { 
+            if(!currentInvite) return; 
+            await setDoc(doc(db, "kullanici_gruplari", `${auth.currentUser.uid}_${currentInvite.groupName}`), { uid: auth.currentUser.uid, groupName: currentInvite.groupName }); 
+            await updateDoc(doc(db, "davetler", currentInvite.id), { status: "accepted" }); 
+            alert("Gruba katıldınız!"); 
+        };
+
+        document.getElementById('decline-btn').onclick = async () => { 
+            await updateDoc(doc(db, "davetler", currentInvite.id), { status: "declined" }); 
+        };
+
+        window.openCreateGroup = async () => { 
+            const gName = prompt("Oluşturulacak Grubun Adı (Şifreli):"); 
+            if(!gName) return; 
+            await setDoc(doc(db, "kullanici_gruplari", `${auth.currentUser.uid}_${gName}`), { uid: auth.currentUser.uid, groupName: gName }); 
+            openModal('invite-modal'); 
+            const listDiv = document.getElementById('user-list-to-invite'); 
+            listDiv.innerHTML = "<div style='padding:10px; text-align:center;'>Kullanıcılar yükleniyor...</div>"; 
+            const usersSnap = await getDocs(collection(db, "kullanicilar")); 
+            listDiv.innerHTML = ""; 
+            usersSnap.forEach(uDoc => { 
+                if(uDoc.id !== auth.currentUser.uid) { 
+                    const ud = uDoc.data(); 
+                    const d = document.createElement('div'); 
+                    d.className = "user-invite-item"; 
+                    d.innerHTML = `
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <img src="${ud.avatar || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">
+                            <span>${ud.email.split('@')[0]}</span>
+                        </div>
+                        <button onclick="sendInvite('${ud.uid}', '${ud.email}', '${gName}')" style="background:var(--accent); color:white; border:none; padding:5px 15px; border-radius:5px; cursor:pointer; font-weight:bold;">Davet Et</button>
+                    `; 
+                    listDiv.appendChild(d); 
+                } 
+            }); 
+            if(listDiv.innerHTML === "") {
+                listDiv.innerHTML = "<div style='padding:10px; text-align:center;'>Başka kullanıcı bulunamadı.</div>";
+            }
+        };
+
+        window.sendInvite = async (tUid, tEmail, gName) => { 
+            await addDoc(collection(db, "davetler"), { from: auth.currentUser.uid, fromName: auth.currentUser.email.split('@')[0], to: tUid, groupName: gName, status: "pending", createdAt: serverTimestamp() }); 
+            alert(`${tEmail.split('@')[0]} kişisine davet gönderildi!`); 
+        };
+
+        function loadMyGroups(uid) { 
+            const q = query(collection(db, "kullanici_gruplari"), where("uid", "==", uid)); 
+            onSnapshot(q, (snap) => { 
+                const list = document.getElementById('groupList'); 
+                list.innerHTML = `
+                    <div class="group-item ${activeGroup==='Genel'?'active':''}" onclick="changeGroup('Genel', this)">
+                        <div style="width:45px; height:45px; border-radius:50%; background:var(--accent); color:white; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:bold;">#</div>
+                        <div style="flex:1;">
+                            <strong style="display:block; font-size:15px;">Genel Sohbet</strong>
+                            <small style="opacity:0.6;">Herkese açık alan</small>
+                        </div>
+                    </div>`; 
+                snap.forEach(d => { 
+                    const g = d.data().groupName; 
+                    if(g === "Genel") return; 
+                    const div = document.createElement('div'); 
+                    div.className = `group-item ${activeGroup===g?'active':''}`; 
+                    div.innerHTML = `
+                        <div style="width:45px; height:45px; border-radius:50%; background:#ff9800; color:white; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:bold;">${g.charAt(0).toUpperCase()}</div>
+                        <div style="flex:1;">
+                            <strong style="display:block; font-size:15px;">${g}</strong>
+                            <small style="opacity:0.6;">Özel Grup</small>
+                        </div>`; 
+                    div.onclick = () => changeGroup(g, div); 
+                    list.appendChild(div); 
+                }); 
+            }); 
+        }
+
+        // --- AUTH ---
         document.getElementById('loginBtn').onclick = () => signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(e => alert(e.message));
         document.getElementById('signupBtn').onclick = () => createUserWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(e => alert(e.message));
         document.getElementById('logoutBtn').onclick = () => signOut(auth);
-        window.setTheme = (t) => document.body.className = (t === 'light') ? '' : t + '-theme';
+        
+        window.setTheme = (t) => {
+            document.body.className = (t === 'light') ? '' : t + '-theme';
+            localStorage.setItem('theme', t);
+        };
     </script>
 </body>
 </html>
